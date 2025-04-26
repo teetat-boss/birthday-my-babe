@@ -1,0 +1,13 @@
+<div class="carousel-container">
+  <div class="image-wrapper" [style.transform]="'translateX(-' + (currentIndex * 100) + '%)'">
+    <div class="image-item" *ngFor="let img of images">
+      <img [src]="img.url" [alt]="img.name" width="300px" height="300px">
+    </div>
+  </div>
+
+  <div class="indicator-wrapper">
+    <div class="dot" *ngFor="let img of images; let i = index" [class.active]="i === currentIndex"
+      (click)="goToImage(i)">
+    </div>
+  </div>
+</div>

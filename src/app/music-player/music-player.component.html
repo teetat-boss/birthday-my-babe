@@ -1,0 +1,40 @@
+<div class="player-container">
+    <div class="song-info">
+        <img src="./img/happy-cake.svg" alt="Album cover" class="rotate-slowly">
+        <div style="width: 100%;">
+            <p class="song-title">{{ currentSong.title }}</p>
+            <p class="song-artist">{{ currentSong.artist }}</p>
+        </div>
+    </div>
+
+    <audio #audioPlayer [src]="currentSong.url"></audio>
+
+    <div class="audio-controls">
+        <div class="time-info">
+            <span>{{ currentTime }}</span>
+            <span>{{ duration }}</span>
+        </div>
+        <input type="range" class="progress-bar" (mousedown)="onSeekStart()" (mouseup)="onSeekEnd($event)"
+            [value]="progress" (input)="seekAudio($event)">
+        <div class="control-buttons">
+            <button (click)="prevSong()" [disabled]="isFirstSong()">
+                <span class="material-symbols-outlined">
+                    skip_previous
+                </span>
+            </button>
+            <button (click)="togglePlay()">
+                <span *ngIf="isPlaying" class="material-symbols-outlined">
+                    pause
+                </span>
+                <span *ngIf="!isPlaying" class="material-symbols-outlined">
+                    play_arrow
+                </span>
+            </button>
+            <button (click)="nextSong()" [disabled]="isLastSong()">
+                <span class="material-symbols-outlined">
+                    skip_next
+                </span>
+            </button>
+        </div>
+    </div>
+</div>

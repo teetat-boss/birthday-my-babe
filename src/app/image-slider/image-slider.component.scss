@@ -1,0 +1,86 @@
+.carousel-container {
+  width: 60vw;
+  height: 75vw;
+  overflow: hidden;
+  border-radius: 20px;
+  margin: 20px auto;
+  background: #fff0f5;
+  box-shadow: 0 8px 20px rgba(255, 192, 203, 0.5);
+  touch-action: pan-y;
+  position: relative;
+}
+
+.image-wrapper {
+  display: flex;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); // ฟิลเด้งๆ
+  will-change: transform;
+}
+
+.image-item {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 80%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+    animation: polaroid 0.8s ease;
+    transform-origin: center center;
+  }
+
+  .image-name {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #b2668c;
+    font-size: 16px;
+  }
+}
+
+// Animation รูปแบบ polaroid
+@keyframes polaroid {
+  0% {
+    transform: scale(0.9) rotate(-5deg);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05) rotate(3deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.indicator-wrapper {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #ffc0cb;
+  border-radius: 50%;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.3s;
+
+  &.active {
+    opacity: 1;
+    background: #ff69b4;
+  }
+}
+
