@@ -2,6 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MusicControlService } from '../music-control.service';
+import { debounceTime, Observable } from 'rxjs';
 
 @Component({
   selector: 'music-player',
@@ -35,35 +36,39 @@ export class MusicPlayerComponent {
   progress = 0;
 
   ngAfterViewInit() {
-    const audio = this.audioPlayerRef.nativeElement;
+    if (this.audioPlayerRef) {
+      const audio = this.audioPlayerRef.nativeElement;
 
-    audio.addEventListener('loadedmetadata', () => {
-      this.duration = this.formatTime(audio.duration);
+      audio.addEventListener('timeupdate', () => {
+        this.debouncedTimeUpdate(audio);
+      });
+
+      this.musicControlService.musicPaused$.subscribe(paused => {
+        if (!this.audioPlayerRef?.nativeElement) {
+          console.warn('audio player not ready yet.');
+          return;
+        }
+        if (audio.played) {
+          audio.pause();
+          this.isPlaying = false;
+        }
+      });
+
+      this.reloadAudio();
+    }
+  }
+
+  debouncedTimeUpdate(audio: HTMLAudioElement) {
+    // ใช้ rxjs debounceTime เพื่อหน่วงการเรียกฟังก์ชัน
+    const timeObservable = new Observable<string>(observer => {
+      observer.next(this.formatTime(audio.currentTime));
+      observer.complete();
     });
 
-    audio.addEventListener('timeupdate', () => {
-      this.currentTime = this.formatTime(audio.currentTime);
-      this.progress = (audio.currentTime / audio.duration) * 100 || 0;
+    timeObservable.pipe(debounceTime(200)).subscribe(formattedTime => {
+      this.currentTime = formattedTime;
     });
-
-    audio.addEventListener('ended', () => {
-      if (!this.isLastSong()) {
-        this.nextSong();
-      } else {
-        this.isPlaying = false;
-        audio.currentTime = 0; // กลับไปต้นเพลงสุดท้าย ถ้าอยากได้
-      }
-    });
-
-    this.musicControlService.musicPaused$.subscribe(paused => {
-      if (!this.audioPlayerRef?.nativeElement) {
-        console.warn('audio player not ready yet.');
-        return;
-      }
-      this.togglePlay();
-    });
-
-    this.reloadAudio();
+    this.progress = (audio.currentTime / audio.duration) * 100 || 0;
   }
 
   togglePlay() {
@@ -134,8 +139,9 @@ export class MusicPlayerComponent {
     const audio = this.audioPlayerRef.nativeElement;
     this.isPlaying = false;
 
-    // ฟัง event loadeddata ก่อน
-    audio.onloadeddata = () => {
+    // เรียกโหลดเพลงใหม่ และรอจนกว่าโหลดจะเสร็จ
+    audio.load();
+    audio.oncanplaythrough = () => {
       if (!this.isPlaying) {
         audio.play();
         this.isPlaying = true;

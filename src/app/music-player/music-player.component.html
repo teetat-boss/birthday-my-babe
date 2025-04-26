@@ -12,7 +12,6 @@
     <div class="audio-controls">
         <div class="time-info">
             <span>{{ currentTime }}</span>
-            <span>{{ duration }}</span>
         </div>
         <input type="range" class="progress-bar" (mousedown)="onSeekStart()" (mouseup)="onSeekEnd($event)"
             [value]="progress" (input)="seekAudio($event)">
