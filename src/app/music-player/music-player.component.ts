@@ -132,7 +132,6 @@ export class MusicPlayerComponent {
 
   reloadAudio() {
     const audio = this.audioPlayerRef.nativeElement;
-    audio.pause(); // หยุดเพลงก่อน
     this.isPlaying = false;
 
     // ฟัง event loadeddata ก่อน
